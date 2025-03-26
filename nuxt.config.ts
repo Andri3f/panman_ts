@@ -4,4 +4,6 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	css: ["@/assets/styles/index.scss"],
 	plugins: ["@/plugins/fontawesome.ts"],
+	port: process.env.PORT || 3000,
+	host: "0.0.0.0",
 })
