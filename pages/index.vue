@@ -33,33 +33,30 @@ async function animateFlight() {
 		const deltaX = speedPxPerSec * Math.sin(directionInRadians)
 		const deltaY = -speedPxPerSec * Math.cos(directionInRadians)
 		if (planeItem.value) {
-			planeItem.value.style.transform = `
-        translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))
-        rotate(${direction}deg)
-      `
+			planeItem.value.style.transition = "transform 0.5s ease-in-out"
+			planeItem.value.style.transform = `rotate(${direction}deg)`
+			await new Promise((resolve) => requestAnimationFrame(() => resolve()))
+			planeItem.value.style.transition = "transform 1s linear"
+			planeItem.value.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) rotate(${direction}deg)`
 		}
 		await new Promise((resolve) => setTimeout(resolve, frameTime * 1000))
 	}
-	planeItem.value.style.transform = `
-        translate(calc(-50%), calc(-50%))
-        rotate(0)
-      `
+	if (planeItem.value) {
+		planeItem.value.style.transition = "transform 1s ease-in-out"
+		planeItem.value.style.transform = `translate(-50%, -50%) rotate(0deg)`
+	}
 	isFlightStarted.value = false
 }
 function onFlyAction() {
 	isFlightStarted.value = !isFlightStarted.value
 	if (!isFlightStarted.value) {
 		if (planeItem.value) {
-			planeItem.value.style.transform = `
-        translate(calc(-50%), calc(-50%))
-        rotate(0)
-      `
+			planeItem.value.style.transform = "translate(-50%, -50%) rotate(0)"
 		}
 	} else {
 		animateFlight()
 	}
 }
-
 onMounted(async () => {
 	try {
 		const res = await fetch("/data/flightData.json")
@@ -72,25 +69,23 @@ onMounted(async () => {
 	}
 })
 </script>
-
 <style lang="scss" scoped>
 .drone-field {
 	position: relative;
 	height: 100vh;
+
 	&__plane {
-		position: relative;
-		z-index: 100;
-		color: #28baba;
-		background-color: #000000aa;
-		padding: 5px;
 		position: fixed;
 		top: 50%;
 		left: 50%;
-		transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%) rotate(0);
+		color: #28baba;
+		background-color: #000000aa;
+		padding: 5px;
 		border-radius: 5px;
-		transform-origin: center;
-		transition: transform 0.5s linear;
+		transition: all 1s linear;
 	}
+
 	&__image {
 		z-index: -1;
 		position: absolute;
@@ -99,23 +94,27 @@ onMounted(async () => {
 		top: 0;
 		left: 0;
 	}
+
 	&__button {
 		background-color: #d8d819cf;
 		padding: 10px 20px;
 		text-transform: uppercase;
 		line-height: 1.2;
 		border-radius: 5px;
-		transition: background 0.3s ease 0s;
-		&:hover {
-			background-color: #94940f;
-		}
+		transition: background 0.3s ease;
 		position: absolute;
 		top: 70%;
 		left: 50%;
 		transform: translate(-50%, 0);
+
+		&:hover {
+			background-color: #94940f;
+		}
+
 		&.active {
 			color: #fff;
 			background-color: #444444d4;
+
 			@media (any-hover: hover) {
 				&:hover {
 					background-color: #333333d4;
